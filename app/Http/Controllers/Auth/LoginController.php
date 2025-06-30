@@ -10,12 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
-{
-    public function __construct()
-    {
-        $this->middleware('guest')->except('logout');
-    }
-
+{   
     public function showLoginForm()
     {
         return view('auth.login');
@@ -57,10 +52,12 @@ class LoginController extends Controller
         Log::info('User logged in', ['userid' => $user->userid]);
 
         // Redirect based on role
-        return match($user->role->name) {
+        $role = optional($user->role)->name;
+
+        return match($role) {
             'admin' => redirect()->route('admin.dashboard'),
             'user' => redirect()->route('user.dashboard'),
-            default => redirect()->route('home')
+            default => redirect('/'),
         };
     }
 

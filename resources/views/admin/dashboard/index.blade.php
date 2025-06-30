@@ -4,77 +4,176 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        <h4>Executive Summary</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex justify-content-end mb-3">
-                            <button id="showTableButton" class="btn btn-success me-2 active">Tabel</button>
-                            <button id="showChartButton" class="btn btn-success">Grafik</button>
-                        </div>
-                        <h5>TARGET ANGGARAN DAN REALISASI TAHUN 2024</h5>
-
-                        <div id="tableContainer" class="table-responsive">
-                            <table class="table table-bordered table-hover">
-                                <thead>
-                                    <tr>
-                                        <th rowspan="2">JENIS PAJAK</th>
-                                        <th rowspan="2">TARGET ANGGARAN</th>
-                                        <th colspan="3">REALISASI</th>
-                                        <th rowspan="2">%</th>
-                                        <th>SELISIH</th>
-                                    </tr>
-                                    <tr>
-                                        <th>KEMARIN</th>
-                                        <th>HARI INI</th>
-                                        <th>S/D HARI INI</th>
-                                        <th>Nominal</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($taxData as $tax)
-                                        <tr>
-                                            <td>{{ $tax['jenisPajak'] }}</td>
-                                            <td>{{ number_format($tax['targetAnggaran'], 0, ',', '.') }}</td>
-                                            <td>{{ number_format($tax['realisasi'], 0, ',', '.') }}</td>
-                                            <td>0</td>
-                                            <td>{{ number_format($tax['realisasi'], 0, ',', '.') }}</td>
-                                            <td>{{ number_format(($tax['realisasi'] / $tax['targetAnggaran']) * 100, 2) }}%</td>
-                                            <td>{{ number_format($tax['realisasi'] - $tax['targetAnggaran'], 0, ',', '.') }}</td>
-                                        </tr>
-                                    @endforeach
-                                    <tr>
-                                        <td style="font-weight: bold;">JUMLAH</td>
-                                        <td style="font-weight: bold;">{{ number_format(array_sum(array_column($taxData, 'targetAnggaran')), 0, ',', '.') }}</td>
-                                        <td style="font-weight: bold;">{{ number_format(array_sum(array_column($taxData, 'realisasi')), 0, ',', '.') }}</td>
-                                        <td style="font-weight: bold;">0</td>
-                                        <td style="font-weight: bold;">{{ number_format(array_sum(array_column($taxData, 'realisasi')), 0, ',', '.') }}</td>
-                                        <td style="font-weight: bold;">{{ number_format((array_sum(array_column($taxData, 'realisasi')) / array_sum(array_column($taxData, 'targetAnggaran'))) * 100, 2) }}%</td>
-                                        <td style="font-weight: bold;">{{ number_format(array_sum(array_column($taxData, 'realisasi')) - array_sum(array_column($taxData, 'targetAnggaran')), 0, ',', '.') }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div id="chartContainer" style="display: none;">
-                            <canvas id="combinedChart"></canvas>
-                        </div>
-                    </div>
+                <div class="d-flex justify-content-between p-3 align-items-center mb-5" style="background-color: #D5ED9F; margin-top: -70px; border-radius: 25px;">
+                    <h4>Executive Summary</h4>
+                        @if (Auth::user())
+                            <div class="dropdown ms-3">
+                                <span class="dropdown-toggle text-black" href="#" data-bs-toggle="dropdown">Hi, {{ Auth::user()->userid }}</span>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="{{ url('/profile') }}" style="color: black;">Profil</a></li>
+                                    <li>
+                                        <form method="POST" action="{{ route('logout') }}">
+                                            @csrf
+                                            <button type="submit" class="dropdown-item" style="color: black;">Logout</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        @endif
                 </div>
 
-                <div class="row mt-4">
-                    @foreach($taxData as $tax)
-                        <div class="col-md-6 mb-4">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ $tax['jenisPajak'] }}</h5>
-                                    <p class="card-text">Realisasi Anggaran 2024: Rp {{ number_format($tax['realisasi'], 0, ',', '.') }}</p>
+                {{-- TABULASI --}}
+                <div class="card mb-4">
+                    <div class="card-body d-flex gap-5" style="background-color: #FFFBE6">
+                        <div class="d-flex flex-column" style="background-color: white; padding: 20px; border-radius: 20px; border-top: 5px solid #00712D; border-right: 5px solid #00712D; width: 802.3px;">
+                            <div class="d-flex justify-content-between mb-3">
+                                <div class="d-flex flex-column gap-1">
+                                    <span style="color: #00712D; font-size: 20px; font-weight: bold;">Tabulasi penerimaan pajak daerah</span>
+                                    <span style="color: #857E7E">Tahun 2025</span>
                                 </div>
+                                <div>
+                                    <button id="showTableButton" class="btn btn-success me-2 active">Tabel</button>
+                                    <button id="showChartButton" class="btn btn-success">Grafik</button>
+                                </div>
+                            </div> 
+    
+                            <div id="tableContainer" class="table-responsive">
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th style="color: #FF6600">Jenis Pajak</th>
+                                            <th style="color: #FF6600">Target (RP.)</th>
+                                            <th style="color: #FF6600">Realisasi (RP.)</th>
+                                            <th style="color: #FF6600">Progres (%)</th> 
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($taxData as $tax)
+                                            <tr>
+                                                <td>{{ $tax['jenisPajak'] }}</td>
+                                                <td>{{ number_format($tax['targetAnggaran'], 0, ',', '.') }}</td>
+                                                <td>{{ number_format($tax['realisasi'], 0, ',', '.') }}</td>
+                                                {{-- <td>0</td>
+                                                <td>{{ number_format($tax['realisasi'], 0, ',', '.') }}</td> --}}
+                                                <td>{{ number_format(($tax['realisasi'] / $tax['targetAnggaran']) * 100, 2) }}%</td>
+                                                {{-- <td>{{ number_format($tax['realisasi'] - $tax['targetAnggaran'], 0, ',', '.') }}</td> --}}
+                                            </tr>
+                                        @endforeach
+                                        <tr>
+                                            <td style="font-weight: bold; color: #00712D">Total</td>
+                                            <td style="font-weight: bold; color: #00712D">{{ number_format(array_sum(array_column($taxData, 'targetAnggaran')), 0, ',', '.') }}</td>
+                                            <td style="font-weight: bold; color: #00712D">{{ number_format(array_sum(array_column($taxData, 'realisasi')), 0, ',', '.') }}</td>
+                                            {{-- <td style="font-weight: bold;">0</td>
+                                            <td style="font-weight: bold;">{{ number_format(array_sum(array_column($taxData, 'realisasi')), 0, ',', '.') }}</td> --}}
+                                            <td style="font-weight: bold; color: #00712D">{{ number_format((array_sum(array_column($taxData, 'realisasi')) / array_sum(array_column($taxData, 'targetAnggaran'))) * 100, 2) }}%</td>
+                                            {{-- <td style="font-weight: bold;">{{ number_format(array_sum(array_column($taxData, 'realisasi')) - array_sum(array_column($taxData, 'targetAnggaran')), 0, ',', '.') }}</td> --}}
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="chartContainer" style="display: none; width: 757.51px;">
+                                <canvas id="combinedChart"></canvas>
                             </div>
                         </div>
-                    @endforeach
-                </div>
 
+                        <div class="d-flex flex-column" style="background-color: white; padding: 20px; border-radius: 20px; border-top: 5px solid #FF6600; border-right: 5px solid #FF6600">
+                            <div class="d-flex gap-3 mb-3 flex-column">
+                                <div class="d-flex flex-column">
+                                    <span style="color: #00712D; font-size: 20px; font-weight: bold;">Total Penerimaan</span>
+                                    <span style="color: #857E7E">Tahun 2025</span>
+                                </div>
+                                <img src="/assets/img/semut.svg" alt="" style="width: 300px; align-self: center;">
+                                <div class="d-flex flex-column gap-2 justify-content-center align-items-center p-2" style="background-color: #EEEDF0; border-radius: 30px; border-top: 3px solid #00712D; border-right: 3px solid #00712D">
+                                    <span style="color: #00712D; font-size: 20px; font-weight: bold;">Rp.{{ number_format(array_sum(array_column($taxData, 'realisasi')), 0, ',', '.') }}</span>
+                                    <span style="color: #857E7E;">Proges: <span style="color: #FF6600; font-weight: bold">{{ number_format((array_sum(array_column($taxData, 'realisasi')) / array_sum(array_column($taxData, 'targetAnggaran'))) * 100, 2) }}%</span></span>
+                                </div>
+                            </div> 
+                        </div>
+                    </div>
+                </div>
+                {{-- TABULASI --}}
+
+                {{-- TABULASI --}}
+                <div class="card" >
+                    <div class="card-body d-flex gap-5 flex-column" style="background-color: #FFFBE6">
+                    <div class="d-flex flex-column gap-1">
+                        <span style="color: #00712D; font-size: 20px; font-weight: bold;">Perbandingan Realisasi Tahun Pajak Dan Tahun Sebelumnya</span>
+                        <span style="color: #857E7E">Tahun 2025 & 2024</span>
+                    </div>
+                    <div class="row justify-content-center g-3">
+                        @foreach($taxData as $tax)
+                            <div class="col-3 d-flex flex-column align-items-center p-3" style="margin-left: 20px; border-top: 2px solid #FF6600; border-right: 2px solid #FF6600; border-radius:25px;">
+                                <div class="text-center" style="border-radius: 10px; background-color: #D5ED9F; padding-top: 10px; padding-bottom: 10px; width: 100%;">
+                                    <img src="{{ $tax['img'] }}" alt="" style="width: 50px">
+                                </div>
+                                <span style="color: #00712D; text-align:center; margin-top: 5px; line-height: 20px; height: 40px">{{ $tax['jenisPajak'] }}</span>
+                                <div style="background-color: black; height: 1px; width: 100%; margin-top: 5px"></div>
+                                <span style="color: #00712D; text-align:center; margin-top: 5px;">2025 : <span style="color: black">Rp.{{ $tax['realisasi'] }}</span></span>
+                                <span style="color: #FF6600; text-align:center; margin-top: 5px;">2024 : <span style="color: black">Rp.{{ $tax['tahunLalu'] }}</span></span>
+                                <div class="w-100 text-end">
+                                    <a href="" style="color: #606060; margin-top: 5px; text-decoration: none; text-align: end;">Lihat detail</a>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+                {{-- TABULASI --}}
+
+                {{-- TABULASI --}}
+                <div class="card mt-4">
+                        <div class="d-flex flex-column" style="background-color: white; padding: 20px; border-radius: 20px; border-top: 5px solid #00712D; border-right: 5px solid #00712D;">
+                            <div class="d-flex justify-content-between mb-3">
+                                <div class="d-flex flex-column gap-1">
+                                    <span style="color: #00712D; font-size: 20px; font-weight: bold;">Tabulasi Penerimaan Pajak Daerah Per Bulan</span>
+                                    <span style="color: #857E7E">Tahun 2025</span>
+                                </div>
+                                <div>
+                                    <button id="showTableButton" class="btn btn-success me-2 active">Tabel</button>
+                                    <button id="showChartButton" class="btn btn-success">Grafik</button>
+                                </div>
+                            </div> 
+    
+                            <div id="tableContainer" class="table-responsive">
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th style="color: #FF6600">Jenis Pajak</th>
+                                            <th style="color: #FF6600">Target (RP.)</th>
+                                            <th style="color: #FF6600">Realisasi (RP.)</th>
+                                            <th style="color: #FF6600">Progres (%)</th> 
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($taxData as $tax)
+                                            <tr>
+                                                <td>{{ $tax['jenisPajak'] }}</td>
+                                                <td>{{ number_format($tax['targetAnggaran'], 0, ',', '.') }}</td>
+                                                <td>{{ number_format($tax['realisasi'], 0, ',', '.') }}</td>
+                                                {{-- <td>0</td>
+                                                <td>{{ number_format($tax['realisasi'], 0, ',', '.') }}</td> --}}
+                                                <td>{{ number_format(($tax['realisasi'] / $tax['targetAnggaran']) * 100, 2) }}%</td>
+                                                {{-- <td>{{ number_format($tax['realisasi'] - $tax['targetAnggaran'], 0, ',', '.') }}</td> --}}
+                                            </tr>
+                                        @endforeach
+                                        <tr>
+                                            <td style="font-weight: bold; color: #00712D">Total</td>
+                                            <td style="font-weight: bold; color: #00712D">{{ number_format(array_sum(array_column($taxData, 'targetAnggaran')), 0, ',', '.') }}</td>
+                                            <td style="font-weight: bold; color: #00712D">{{ number_format(array_sum(array_column($taxData, 'realisasi')), 0, ',', '.') }}</td>
+                                            {{-- <td style="font-weight: bold;">0</td>
+                                            <td style="font-weight: bold;">{{ number_format(array_sum(array_column($taxData, 'realisasi')), 0, ',', '.') }}</td> --}}
+                                            <td style="font-weight: bold; color: #00712D">{{ number_format((array_sum(array_column($taxData, 'realisasi')) / array_sum(array_column($taxData, 'targetAnggaran'))) * 100, 2) }}%</td>
+                                            {{-- <td style="font-weight: bold;">{{ number_format(array_sum(array_column($taxData, 'realisasi')) - array_sum(array_column($taxData, 'targetAnggaran')), 0, ',', '.') }}</td> --}}
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="chartContainer" style="display: none; width: 757.51px;">
+                                <canvas id="combinedChart"></canvas>
+                            </div>
+                        </div>
+                    
+                </div>
+                {{-- TABULASI --}}
             </div>
         </div>
     </div>

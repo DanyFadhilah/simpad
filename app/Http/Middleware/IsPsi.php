@@ -16,7 +16,7 @@ class IsPsi
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::user()->role->name != 'psi') {
+        if (Auth::user()->role->name != 'admin') {
             return abort(404);
         }
         return $next($request);
