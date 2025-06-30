@@ -35,7 +35,7 @@
                                     <button id="showTableButton" class="btn btn-success me-2 active">Tabel</button>
                                     <button id="showChartButton" class="btn btn-success">Grafik</button>
                                 </div>
-                            </div> 
+                            </div>
     
                             <div id="tableContainer" class="table-responsive">
                                 <table class="table table-bordered table-hover">
@@ -44,21 +44,22 @@
                                             <th style="color: #FF6600">Jenis Pajak</th>
                                             <th style="color: #FF6600">Target (RP.)</th>
                                             <th style="color: #FF6600">Realisasi (RP.)</th>
-                                            <th style="color: #FF6600">Progres (%)</th> 
+                                            <th style="color: #FF6600">Progres (%)</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach($taxData as $tax)
-                                            <tr>
-                                                <td>{{ $tax['jenisPajak'] }}</td>
-                                                <td>{{ number_format($tax['targetAnggaran'], 0, ',', '.') }}</td>
-                                                <td>{{ number_format($tax['realisasi'], 0, ',', '.') }}</td>
-                                                {{-- <td>0</td>
-                                                <td>{{ number_format($tax['realisasi'], 0, ',', '.') }}</td> --}}
-                                                <td>{{ number_format(($tax['realisasi'] / $tax['targetAnggaran']) * 100, 2) }}%</td>
-                                                {{-- <td>{{ number_format($tax['realisasi'] - $tax['targetAnggaran'], 0, ',', '.') }}</td> --}}
-                                            </tr>
-                                        @endforeach
+                                        @php
+                                            $persen = ($tax['targetAnggaran'] > 0) ? ($tax['realisasi'] / $tax['targetAnggaran']) * 100 : 0;
+                                            $style = $persen > 100 ? 'style=background-color:#00712D!important;color:white!important;' : '';
+                                        @endphp
+                                        <tr>
+                                            <td {!! $style !!}>{{ $tax['jenisPajak'] }}</td>
+                                            <td {!! $style !!}>{{ number_format($tax['targetAnggaran'], 0, ',', '.') }}</td>
+                                            <td {!! $style !!}>{{ number_format($tax['realisasi'], 0, ',', '.') }}</td>
+                                            <td {!! $style !!}>{{ number_format($persen, 2) }}%</td>
+                                        </tr>
+                                    @endforeach
                                         <tr>
                                             <td style="font-weight: bold; color: #00712D">Total</td>
                                             <td style="font-weight: bold; color: #00712D">{{ number_format(array_sum(array_column($taxData, 'targetAnggaran')), 0, ',', '.') }}</td>
@@ -396,11 +397,11 @@
             document.getElementById('showChartButton').classList.remove('active');
         });
 
-        document.getElementById('showChartButton2').addEventListener('click', () => {
-            document.getElementById('chartContainer2').style.display = 'block';
-            document.getElementById('tableContainer2').style.display = 'none';
-            document.getElementById('showChartButton2').classList.add('active');
-            document.getElementById('showTableButton2').classList.remove('active');
+        document.getElementById('showChartButton').addEventListener('click', () => {
+            document.getElementById('chartContainer').style.display = 'block';
+            document.getElementById('tableContainer').style.display = 'none';
+            document.getElementById('showChartButton').classList.add('active');
+            document.getElementById('showTableButton').classList.remove('active');
         });
 
         document.getElementById('showTableButton2').addEventListener('click', () => {
