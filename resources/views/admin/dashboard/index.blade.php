@@ -128,47 +128,116 @@
                                     <span style="color: #857E7E">Tahun 2025</span>
                                 </div>
                                 <div>
-                                    <button id="showTableButton" class="btn btn-success me-2 active">Tabel</button>
-                                    <button id="showChartButton" class="btn btn-success">Grafik</button>
+                                    <button id="showTableButton2" class="btn btn-success me-2 active">Tabel</button>
+                                    <button id="showChartButton2" class="btn btn-success">Grafik</button>
                                 </div>
                             </div> 
     
-                            <div id="tableContainer" class="table-responsive">
+                            <div id="tableContainer2" class="table-responsive" style="overflow-x: auto; white-space: nowrap;">
                                 <table class="table table-bordered table-hover">
                                     <thead>
                                         <tr>
                                             <th style="color: #FF6600">Jenis Pajak</th>
-                                            <th style="color: #FF6600">Target (RP.)</th>
-                                            <th style="color: #FF6600">Realisasi (RP.)</th>
-                                            <th style="color: #FF6600">Progres (%)</th> 
+                                            <th style="color: #FF6600">Target TW 1 (Rp.)</th>
+                                            <th style="color: #FF6600">Januari (Rp.)</th>
+                                            <th style="color: #FF6600">Februari (Rp.)</th>
+                                            <th style="color: #FF6600">Maret (Rp.)</th>
+                                            <th style="color: #FF6600">Real TW 1 (%)</th>
+                                            <th style="color: #FF6600">Target TW 2 (Rp.)</th>
+                                            <th style="color: #FF6600">April (Rp.)</th>
+                                            <th style="color: #FF6600">Mei (Rp.)</th>
+                                            <th style="color: #FF6600">Juni (Rp.)</th>
+                                            <th style="color: #FF6600">Real TW 2 (%)</th>
+                                            <th style="color: #FF6600">Target TW 3 (Rp.)</th>
+                                            <th style="color: #FF6600">Juli (Rp.)</th>
+                                            <th style="color: #FF6600">Agustus (Rp.)</th>
+                                            <th style="color: #FF6600">September (Rp.)</th>
+                                            <th style="color: #FF6600">Real TW 3 (%)</th>
+                                            <th style="color: #FF6600">Target TW 4 (Rp.)</th>
+                                            <th style="color: #FF6600">Oktober (Rp.)</th>
+                                            <th style="color: #FF6600">November (Rp.)</th>
+                                            <th style="color: #FF6600">Desember (Rp.)</th>
+                                            <th style="color: #FF6600">Real TW4 (%)</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($taxData as $tax)
+                                        @foreach($taxData2 as $tax)
                                             <tr>
                                                 <td>{{ $tax['jenisPajak'] }}</td>
-                                                <td>{{ number_format($tax['targetAnggaran'], 0, ',', '.') }}</td>
-                                                <td>{{ number_format($tax['realisasi'], 0, ',', '.') }}</td>
-                                                {{-- <td>0</td>
-                                                <td>{{ number_format($tax['realisasi'], 0, ',', '.') }}</td> --}}
-                                                <td>{{ number_format(($tax['realisasi'] / $tax['targetAnggaran']) * 100, 2) }}%</td>
-                                                {{-- <td>{{ number_format($tax['realisasi'] - $tax['targetAnggaran'], 0, ',', '.') }}</td> --}}
+                                                <td>{{ number_format($tax['targetTW1'], 0, ',', '.') }}</td>
+                                                <td>{{ number_format($tax['januari'], 0, ',', '.') }}</td>
+                                                <td>{{ number_format($tax['februari'], 0, ',', '.') }}</td>
+                                                <td>{{ number_format($tax['maret'], 0, ',', '.') }}</td>
+                                                <td>{{ number_format((($tax['januari'] + $tax['februari'] + $tax['maret']) / $tax['targetTW1']) * 100, 2) }}%</td>
+                                                <td>{{ number_format($tax['targetTW2'], 0, ',', '.') }}</td>
+                                                <td>{{ number_format($tax['april'], 0, ',', '.') }}</td>
+                                                <td>{{ number_format($tax['mei'], 0, ',', '.') }}</td>
+                                                <td>{{ number_format($tax['juni'], 0, ',', '.') }}</td>
+                                                <td>{{ number_format((($tax['april'] + $tax['mei'] + $tax['juni']) / $tax['targetTW2']) * 100, 2) }}%</td>
+                                                <td>{{ number_format($tax['targetTW3'], 0, ',', '.') }}</td>
+                                                <td>{{ number_format($tax['juli'], 0, ',', '.') }}</td>
+                                                <td>{{ number_format($tax['agustus'], 0, ',', '.') }}</td>
+                                                <td>{{ number_format($tax['september'], 0, ',', '.') }}</td>
+                                                <td>{{ number_format((($tax['juli'] + $tax['agustus'] + $tax['september']) / $tax['targetTW3']) * 100, 2) }}%</td>
+                                                <td>{{ number_format($tax['targetTW4'], 0, ',', '.') }}</td>
+                                                <td>{{ number_format($tax['oktober'], 0, ',', '.') }}</td>
+                                                <td>{{ number_format($tax['november'], 0, ',', '.') }}</td>
+                                                <td>{{ number_format($tax['desember'], 0, ',', '.') }}</td>
+                                                <td>{{ number_format((($tax['oktober'] + $tax['november'] + $tax['desember']) / $tax['targetTW4']) * 100, 2) }}%</td>
                                             </tr>
                                         @endforeach
                                         <tr>
                                             <td style="font-weight: bold; color: #00712D">Total</td>
-                                            <td style="font-weight: bold; color: #00712D">{{ number_format(array_sum(array_column($taxData, 'targetAnggaran')), 0, ',', '.') }}</td>
-                                            <td style="font-weight: bold; color: #00712D">{{ number_format(array_sum(array_column($taxData, 'realisasi')), 0, ',', '.') }}</td>
-                                            {{-- <td style="font-weight: bold;">0</td>
-                                            <td style="font-weight: bold;">{{ number_format(array_sum(array_column($taxData, 'realisasi')), 0, ',', '.') }}</td> --}}
-                                            <td style="font-weight: bold; color: #00712D">{{ number_format((array_sum(array_column($taxData, 'realisasi')) / array_sum(array_column($taxData, 'targetAnggaran'))) * 100, 2) }}%</td>
-                                            {{-- <td style="font-weight: bold;">{{ number_format(array_sum(array_column($taxData, 'realisasi')) - array_sum(array_column($taxData, 'targetAnggaran')), 0, ',', '.') }}</td> --}}
+                                            <td style="font-weight: bold; color: #00712D">{{ number_format(array_sum(array_column($taxData2, 'targetTW1')), 0, ',', '.') }}</td>
+                                            <td style="font-weight: bold; color: #00712D">{{ number_format(array_sum(array_column($taxData2, 'januari')), 0, ',', '.') }}</td>
+                                            <td style="font-weight: bold; color: #00712D">{{ number_format(array_sum(array_column($taxData2, 'februari')), 0, ',', '.') }}</td>
+                                            <td style="font-weight: bold; color: #00712D">{{ number_format(array_sum(array_column($taxData2, 'maret')), 0, ',', '.') }}</td>
+                                            <td style="font-weight: bold; color: #00712D">
+                                                @php
+                                                    $totalTargetTW1 = array_sum(array_column($taxData2, 'targetTW1'));
+                                                    $totalRealisasiTW1 = array_sum(array_column($taxData2, 'januari')) + array_sum(array_column($taxData2, 'februari')) + array_sum(array_column($taxData2, 'maret'));
+                                                @endphp
+                                                {{ $totalTargetTW1 > 0 ? number_format(($totalRealisasiTW1 / $totalTargetTW1) * 100, 2) . '%' : '0%' }}
+                                            </td>
+                                            <td style="font-weight: bold; color: #00712D">{{ number_format(array_sum(array_column($taxData2, 'targetTW2')), 0, ',', '.') }}</td>
+                                            <td style="font-weight: bold; color: #00712D">{{ number_format(array_sum(array_column($taxData2, 'april')), 0, ',', '.') }}</td>
+                                            <td style="font-weight: bold; color: #00712D">{{ number_format(array_sum(array_column($taxData2, 'mei')), 0, ',', '.') }}</td>
+                                            <td style="font-weight: bold; color: #00712D">{{ number_format(array_sum(array_column($taxData2, 'juni')), 0, ',', '.') }}</td>
+                                            <td style="font-weight: bold; color: #00712D">
+                                                @php
+                                                    $totalTargetTW1 = array_sum(array_column($taxData2, 'targetTW2'));
+                                                    $totalRealisasiTW1 = array_sum(array_column($taxData2, 'april')) + array_sum(array_column($taxData2, 'mei')) + array_sum(array_column($taxData2, 'juni'));
+                                                @endphp
+                                                {{ $totalTargetTW1 > 0 ? number_format(($totalRealisasiTW1 / $totalTargetTW1) * 100, 2) . '%' : '0%' }}
+                                            </td>
+                                            <td style="font-weight: bold; color: #00712D">{{ number_format(array_sum(array_column($taxData2, 'targetTW3')), 0, ',', '.') }}</td>
+                                            <td style="font-weight: bold; color: #00712D">{{ number_format(array_sum(array_column($taxData2, 'juli')), 0, ',', '.') }}</td>
+                                            <td style="font-weight: bold; color: #00712D">{{ number_format(array_sum(array_column($taxData2, 'agustus')), 0, ',', '.') }}</td>
+                                            <td style="font-weight: bold; color: #00712D">{{ number_format(array_sum(array_column($taxData2, 'september')), 0, ',', '.') }}</td>
+                                            <td style="font-weight: bold; color: #00712D">
+                                                @php
+                                                    $totalTargetTW1 = array_sum(array_column($taxData2, 'targetTW3'));
+                                                    $totalRealisasiTW1 = array_sum(array_column($taxData2, 'juli')) + array_sum(array_column($taxData2, 'agustus')) + array_sum(array_column($taxData2, 'september'));
+                                                @endphp
+                                                {{ $totalTargetTW1 > 0 ? number_format(($totalRealisasiTW1 / $totalTargetTW1) * 100, 2) . '%' : '0%' }}
+                                            </td>
+                                            <td style="font-weight: bold; color: #00712D">{{ number_format(array_sum(array_column($taxData2, 'targetTW4')), 0, ',', '.') }}</td>
+                                            <td style="font-weight: bold; color: #00712D">{{ number_format(array_sum(array_column($taxData2, 'oktober')), 0, ',', '.') }}</td>
+                                            <td style="font-weight: bold; color: #00712D">{{ number_format(array_sum(array_column($taxData2, 'november')), 0, ',', '.') }}</td>
+                                            <td style="font-weight: bold; color: #00712D">{{ number_format(array_sum(array_column($taxData2, 'desember')), 0, ',', '.') }}</td>
+                                            <td style="font-weight: bold; color: #00712D">
+                                                @php
+                                                    $totalTargetTW1 = array_sum(array_column($taxData2, 'targetTW4'));
+                                                    $totalRealisasiTW1 = array_sum(array_column($taxData2, 'oktober')) + array_sum(array_column($taxData2, 'november')) + array_sum(array_column($taxData2, 'desember'));
+                                                @endphp
+                                                {{ $totalTargetTW1 > 0 ? number_format(($totalRealisasiTW1 / $totalTargetTW1) * 100, 2) . '%' : '0%' }}
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
-                            <div id="chartContainer" style="display: none; width: 757.51px;">
-                                <canvas id="combinedChart"></canvas>
+                            <div id="chartContainer2" style="display: none;">
+                                <canvas id="combinedChart2"></canvas>
                             </div>
                         </div>
                     
@@ -181,6 +250,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         const taxData = @json($taxData); // Pass data using JSON
+        const taxData2 = @json($taxData2); // Pass data using JSON
 
         const ctxCombined = document.getElementById('combinedChart').getContext('2d');
 
@@ -254,6 +324,70 @@
             options: optionsCombined
         });
 
+        const ctxTaxPerMonth = document.getElementById('combinedChart2').getContext('2d');
+        const monthLabels = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        
+        const datasetsPerMonth = taxData2.map((item, index) => ({
+            label: item.jenisPajak,
+            data: [
+                item.januari,
+                item.februari,
+                item.maret,
+                item.april,
+                item.mei,
+                item.juni,
+                item.juli,
+                item.agustus,
+                item.september,
+                item.oktober,
+                item.november,
+                item.desember
+            ],
+            backgroundColor: `hsl(${index * 35}, 70%, 60%)`
+        }));
+
+        const chartPerMonth = new Chart(ctxTaxPerMonth, {
+            type: 'bar',
+            data: {
+                labels: monthLabels,
+                datasets: datasetsPerMonth
+            },
+            options: {
+                responsive: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString();
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Nominal (Rp)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                let value = context.parsed.y;
+                                return `${label}: Rp${value.toLocaleString()}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
 
         document.getElementById('showTableButton').addEventListener('click', () => {
             document.getElementById('tableContainer').style.display = 'block';
@@ -262,11 +396,25 @@
             document.getElementById('showChartButton').classList.remove('active');
         });
 
-        document.getElementById('showChartButton').addEventListener('click', () => {
-            document.getElementById('chartContainer').style.display = 'block';
-            document.getElementById('tableContainer').style.display = 'none';
-            document.getElementById('showChartButton').classList.add('active');
-            document.getElementById('showTableButton').classList.remove('active');
+        document.getElementById('showChartButton2').addEventListener('click', () => {
+            document.getElementById('chartContainer2').style.display = 'block';
+            document.getElementById('tableContainer2').style.display = 'none';
+            document.getElementById('showChartButton2').classList.add('active');
+            document.getElementById('showTableButton2').classList.remove('active');
+        });
+
+        document.getElementById('showTableButton2').addEventListener('click', () => {
+            document.getElementById('tableContainer2').style.display = 'block';
+            document.getElementById('chartContainer2').style.display = 'none';
+            document.getElementById('showTableButton2').classList.add('active');
+            document.getElementById('showChartButton2').classList.remove('active');
+        });
+
+        document.getElementById('showChartButton2').addEventListener('click', () => {
+            document.getElementById('chartContainer2').style.display = 'block';
+            document.getElementById('tableContainer2').style.display = 'none';
+            document.getElementById('showChartButton2').classList.add('active');
+            document.getElementById('showTableButton2').classList.remove('active');
         });
     </script>
     <style>
